@@ -45,9 +45,10 @@
               v-model="fecha"
               label="Fecha"
               :min="today"
+              :allowed-dates="allowedDates"
               prepend-icon=""
               prepend-inner-icon="mdi-calendar"
-              :rules="[(v) => !!v || 'Selecciona una fecha']"
+              :rules="[(v) => !!v || 'Selecciona una fecha', (v) => allowedDates(v) || 'Esa fecha ya está reservada']"
             />
           </v-col>
 
@@ -80,6 +81,13 @@ const today = dateAdapter.startOfDay(new Date())
 const form = ref(null)
 const persona = ref(null)
 const fecha = ref(null)
+
+const reservedDates = computed(() => store.reservas.map((r) => r.fecha))
+
+function allowedDates(date) {
+  if (!date) return true
+  return !reservedDates.value.some((reservada) => dateAdapter.isSameDay(reservada, date))
+}
 
 async function save() {
   const { valid } = await form.value.validate()
