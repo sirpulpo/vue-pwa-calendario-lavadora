@@ -34,7 +34,9 @@
           <v-col cols="12" sm="5">
             <v-select
               v-model="persona"
-              :items="personas"
+              :items="store.personas"
+              item-title="nombre"
+              item-value="nombre"
               label="Persona"
               :rules="[(v) => !!v || 'Selecciona una persona']"
             />
@@ -74,7 +76,6 @@ const store = useAppStore()
 
 const focus = ref(new Date())
 
-const personas = ['Daniel', 'Jose', 'Pau', 'Invitado']
 const today = dateAdapter.startOfDay(new Date())
 
 const form = ref(null)
@@ -89,6 +90,7 @@ const events = computed(() =>
     start: reserva.fecha,
     end: reserva.fecha,
     allDay: true,
+    color: reserva.color,
   })),
 )
 
