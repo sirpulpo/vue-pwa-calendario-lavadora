@@ -18,7 +18,18 @@ export const useAppStore = defineStore('app', {
       { nombre: 'Invitado', color: 'orange' },
     ],
     reservas: [],
+    usuario: { nombre: 'Victor Daniel Aguirre Gil' },
   }),
+  getters: {
+    iniciales(state) {
+      if (!state.usuario?.nombre) return ''
+      return state.usuario.nombre
+        .split(' ')
+        .slice(0, 2)
+        .map((palabra) => palabra.charAt(0).toUpperCase())
+        .join('')
+    },
+  },
   actions: {
     addReserva({ persona, fecha }) {
       const color = this.personas.find((p) => p.nombre === persona)?.color
@@ -31,6 +42,9 @@ export const useAppStore = defineStore('app', {
     },
     removeReserva(id) {
       this.reservas = this.reservas.filter((r) => r.id !== id)
+    },
+    logout() {
+      this.usuario = null
     },
   },
 })
