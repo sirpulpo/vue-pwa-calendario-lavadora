@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useDate } from 'vuetify'
 import { VDateInput } from 'vuetify/labs/VDateInput'
 import { useAppStore } from '@/stores/app'
@@ -104,8 +104,15 @@ const focus = ref(new Date())
 const today = dateAdapter.startOfDay(new Date())
 
 const form = ref(null)
-const persona = ref(null)
+const persona = ref(store.personaUsuario)
 const fecha = ref(null)
+
+watch(
+  () => store.personaUsuario,
+  (v) => {
+    persona.value = v
+  },
+)
 
 const reservedDates = computed(() => store.reservas.map((r) => r.fecha))
 
@@ -141,7 +148,9 @@ async function save() {
   if (!valid) return
 
   store.addReserva({ persona: persona.value, fecha: fecha.value })
-  form.value.reset()
+  fecha.value = null
+  persona.value = store.personaUsuario
+  form.value.resetValidation()
 }
 
 const monthLabel = computed(() => {

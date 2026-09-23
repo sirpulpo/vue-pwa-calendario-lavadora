@@ -29,6 +29,10 @@ export const useAppStore = defineStore('app', {
         .map((palabra) => palabra.charAt(0).toUpperCase())
         .join('')
     },
+    personaUsuario(state) {
+      const palabras = state.usuario?.nombre?.toLowerCase().split(' ') ?? []
+      return state.personas.find((p) => palabras.includes(p.nombre.toLowerCase()))?.nombre ?? null
+    },
   },
   actions: {
     addReserva({ persona, fecha }) {
