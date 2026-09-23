@@ -29,5 +29,8 @@ export const useAppStore = defineStore('app', {
         color,
       })
     },
+    removeReserva(id) {
+      this.reservas = this.reservas.filter((r) => r.id !== id)
+    },
   },
 })

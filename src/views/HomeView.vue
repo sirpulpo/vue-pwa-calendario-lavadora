@@ -25,6 +25,7 @@
         :weekdays="[1, 2, 3, 4, 5, 6, 0]"
         :events="events"
         class="mt-2"
+        @click:event="onEventClick"
       />
     </v-sheet>
 
@@ -68,6 +69,24 @@
         </v-row>
       </v-form>
     </v-sheet>
+
+    <v-dialog
+      :model-value="!!reservaAEliminar"
+      max-width="400"
+      @update:model-value="(v) => !v && (reservaAEliminar = null)"
+    >
+      <v-card v-if="reservaAEliminar" title="Eliminar reserva">
+        <v-card-text>
+          ¿Eliminar la reserva de {{ reservaAEliminar.name }} del
+          {{ dateAdapter.format(reservaAEliminar.start, 'fullDate') }}?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="reservaAEliminar = null">Cancelar</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmDeleteReserva">Eliminar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -92,6 +111,7 @@ const reservedDates = computed(() => store.reservas.map((r) => r.fecha))
 
 const events = computed(() =>
   store.reservas.map((reserva) => ({
+    id: reserva.id,
     name: reserva.persona,
     start: reserva.fecha,
     end: reserva.fecha,
@@ -99,6 +119,17 @@ const events = computed(() =>
     color: reserva.color,
   })),
 )
+
+const reservaAEliminar = ref(null)
+
+function onEventClick(_nativeEvent, { event }) {
+  reservaAEliminar.value = event
+}
+
+function confirmDeleteReserva() {
+  store.removeReserva(reservaAEliminar.value.id)
+  reservaAEliminar.value = null
+}
 
 function allowedDates(date) {
   if (!date) return true
