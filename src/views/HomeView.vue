@@ -86,7 +86,7 @@ const reservedDates = computed(() => store.reservas.map((r) => r.fecha))
 
 const events = computed(() =>
   store.reservas.map((reserva) => ({
-    title: reserva.persona,
+    name: reserva.persona,
     start: reserva.fecha,
     end: reserva.fecha,
     allDay: true,
