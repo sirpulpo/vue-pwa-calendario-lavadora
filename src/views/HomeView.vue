@@ -55,7 +55,13 @@
           </v-col>
 
           <v-col cols="12" sm="2" class="d-flex align-center">
-            <v-btn type="submit" color="primary" prepend-icon="mdi-content-save" block>
+            <v-btn
+              type="submit"
+              color="primary"
+              prepend-icon="mdi-content-save"
+              block
+              :disabled="!persona || !fecha"
+            >
               Guardar
             </v-btn>
           </v-col>
