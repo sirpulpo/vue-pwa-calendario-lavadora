@@ -11,5 +11,15 @@ export const useAppStore = defineStore('app', {
       { name: 'Vue Router', icon: 'vue', url: 'https://router.vuejs.org' },
       { name: 'PWA', icon: 'pwa', url: 'https://vite-pwa-org.netlify.app' },
     ],
+    reservas: [],
   }),
+  actions: {
+    addReserva({ persona, fecha }) {
+      this.reservas.push({
+        id: crypto.randomUUID(),
+        persona,
+        fecha,
+      })
+    },
+  },
 })
