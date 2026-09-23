@@ -1,39 +1,57 @@
 <template>
-  <v-container class="py-10">
-    <v-row justify="center">
-      <v-col cols="12" class="text-center mb-6">
-        <h1 class="text-h3 font-weight-bold">¡Hola mundo! 👋</h1>
-        <p class="text-subtitle-1 text-medium-emphasis mt-2">{{ store.appName }}</p>
-      </v-col>
-    </v-row>
+  <v-container fluid class="py-4 py-md-6">
+    <v-sheet elevation="2" rounded="lg" class="pa-2 pa-sm-4">
+      <v-toolbar flat color="transparent" density="comfortable">
+        <v-btn icon="mdi-chevron-left" variant="text" aria-label="Mes anterior" @click="prevMonth" />
 
-    <v-row justify="center">
-      <v-col v-for="tech in store.technologies" :key="tech.name" cols="6" sm="4" md="2">
-        <v-card class="text-center py-6" :href="tech.url" target="_blank" rel="noopener" elevation="2" hover>
-          <component :is="iconComponents[tech.icon]" style="font-size: 48px" />
-          <v-card-subtitle class="mt-2">{{ tech.name }}</v-card-subtitle>
-        </v-card>
-      </v-col>
-    </v-row>
+        <v-toolbar-title class="text-capitalize text-center flex-grow-0 mx-2">
+          {{ monthLabel }}
+        </v-toolbar-title>
+
+        <v-btn icon="mdi-chevron-right" variant="text" aria-label="Mes siguiente" @click="nextMonth" />
+
+        <v-spacer />
+
+        <v-btn variant="tonal" color="primary" prepend-icon="mdi-calendar-today" @click="goToday">
+          Hoy
+        </v-btn>
+      </v-toolbar>
+
+      <v-calendar
+        v-model="focus"
+        view-mode="month"
+        :weekdays="[1, 2, 3, 4, 5, 6, 0]"
+        :events="events"
+        hide-header
+        class="mt-2"
+      />
+    </v-sheet>
   </v-container>
 </template>
 
 <script setup>
-import { useAppStore } from '@/stores/app'
+import { ref, computed } from 'vue'
+import { useDate } from 'vuetify'
 
-import IconVue from '~icons/logos/vue'
-import IconVitejs from '~icons/logos/vitejs'
-import IconVuetify from '~icons/logos/vuetifyjs'
-import IconPinia from '~icons/logos/pinia'
-import IconPwa from '~icons/logos/pwa'
+const dateAdapter = useDate()
 
-const store = useAppStore()
+const focus = ref([new Date()])
+const events = ref([])
 
-const iconComponents = {
-  vue: IconVue,
-  vitejs: IconVitejs,
-  vuetifyjs: IconVuetify,
-  pinia: IconPinia,
-  pwa: IconPwa,
+const monthLabel = computed(() => {
+  const label = dateAdapter.format(focus.value[0], 'monthAndYear')
+  return label.charAt(0).toUpperCase() + label.slice(1)
+})
+
+function prevMonth() {
+  focus.value = [dateAdapter.addMonths(focus.value[0], -1)]
+}
+
+function nextMonth() {
+  focus.value = [dateAdapter.addMonths(focus.value[0], 1)]
+}
+
+function goToday() {
+  focus.value = [new Date()]
 }
 </script>

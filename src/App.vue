@@ -8,6 +8,7 @@ const store = useAppStore()
   <v-app>
     <v-app-bar color="primary" density="comfortable">
       <v-app-bar-title>{{ store.appName }}</v-app-bar-title>
+      <v-btn icon="mdi-information-outline" aria-label="Acerca de" :to="{ name: 'about' }" />
     </v-app-bar>
 
     <v-main>

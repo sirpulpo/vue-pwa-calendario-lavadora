@@ -5,8 +5,13 @@ import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
 import Icons from 'unplugin-icons/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { createHtmlPlugin } from 'vite-plugin-html'
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig({
+  devtools: {
+    apply: 'serve',
+  },
   plugins: [
     vue(),
     vuetify({ autoImport: true }),
@@ -30,6 +35,8 @@ export default defineConfig({
         ],
       },
     }),
+    vueDevTools(),
+    createHtmlPlugin({}),
   ],
   resolve: {
     alias: {
