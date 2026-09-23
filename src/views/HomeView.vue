@@ -73,7 +73,6 @@ const dateAdapter = useDate()
 const store = useAppStore()
 
 const focus = ref(new Date())
-const events = ref([])
 
 const personas = ['Daniel', 'Jose', 'Pau', 'Invitado']
 const today = dateAdapter.startOfDay(new Date())
@@ -83,6 +82,15 @@ const persona = ref(null)
 const fecha = ref(null)
 
 const reservedDates = computed(() => store.reservas.map((r) => r.fecha))
+
+const events = computed(() =>
+  store.reservas.map((reserva) => ({
+    title: reserva.persona,
+    start: reserva.fecha,
+    end: reserva.fecha,
+    allDay: true,
+  })),
+)
 
 function allowedDates(date) {
   if (!date) return true
