@@ -6,7 +6,7 @@
 
         <v-spacer />
 
-        <v-toolbar-title class="text-capitalize text-center flex-grow-0 mx-2 text-h6">
+        <v-toolbar-title class="text-capitalize text-center mx-2 text-h6">
           {{ monthLabel }}
         </v-toolbar-title>
 
