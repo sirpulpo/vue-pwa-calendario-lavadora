@@ -3,6 +3,15 @@ import authService from '@/services/auth'
 import reservationService from '@/services/reservation'
 import { getSessionUser } from '@/helpers/session'
 
+function mapReserva(reservation) {
+  return {
+    id: reservation.uid,
+    persona: reservation.user?.name ?? '',
+    fecha: new Date(reservation.date),
+    color: reservation.user?.color ?? 'primary',
+  }
+}
+
 export const useAppStore = defineStore('app', {
   state: () => ({
     appName: 'Calendario Lavadora',
@@ -21,6 +30,7 @@ export const useAppStore = defineStore('app', {
       { nombre: 'Invitado', color: 'orange' },
     ],
     reservas: [],
+    reservasCargando: false,
     usuario: getSessionUser(),
   }),
   getters: {
@@ -63,13 +73,17 @@ export const useAppStore = defineStore('app', {
     },
     async crearReserva(fecha) {
       const reservation = await reservationService.create({ date: fecha })
-      this.reservas.push({
-        id: reservation.uid,
-        persona: reservation.user?.name ?? this.aliasUsuario,
-        fecha: new Date(reservation.date),
-        color: reservation.user?.color ?? this.colorUsuario,
-      })
+      this.reservas.push(mapReserva({ ...reservation, user: this.usuario }))
       return reservation
+    },
+    async cargarReservas({ from, to, signal } = {}) {
+      this.reservasCargando = true
+      try {
+        const reservations = await reservationService.getAll({ from, to }, { signal })
+        this.reservas = reservations.map(mapReserva)
+      } finally {
+        this.reservasCargando = false
+      }
     },
     removeReserva(id) {
       this.reservas = this.reservas.filter((r) => r.id !== id)

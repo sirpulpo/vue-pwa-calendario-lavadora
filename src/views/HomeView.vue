@@ -19,6 +19,20 @@
         </v-btn>
       </v-toolbar>
 
+      <v-progress-linear v-if="store.reservasCargando" indeterminate color="primary" class="mt-2" />
+
+      <v-alert
+        v-if="errorCargar"
+        type="error"
+        variant="tonal"
+        density="compact"
+        closable
+        class="mt-2"
+        @click:close="errorCargar = ''"
+      >
+        {{ errorCargar }}
+      </v-alert>
+
       <v-calendar
         v-model="focus"
         type="month"
@@ -102,7 +116,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useDate } from 'vuetify'
 import { VDateInput } from 'vuetify/labs/VDateInput'
 import { useAppStore } from '@/stores/app'
@@ -118,6 +132,28 @@ const form = ref(null)
 const fecha = ref(null)
 const guardando = ref(false)
 const errorGuardar = ref('')
+const errorCargar = ref('')
+
+let cargaController
+
+async function cargarReservas() {
+  cargaController?.abort()
+  cargaController = new AbortController()
+  errorCargar.value = ''
+  try {
+    await store.cargarReservas({ signal: cargaController.signal })
+  } catch (err) {
+    if (err?.code !== 'ERR_CANCELED') {
+      errorCargar.value = 'No se pudieron cargar las reservas'
+    }
+  }
+}
+
+onMounted(cargarReservas)
+
+onBeforeUnmount(() => {
+  cargaController?.abort()
+})
 
 const reservedDates = computed(() => store.reservas.map((r) => r.fecha))
 
@@ -159,6 +195,7 @@ async function save() {
     await store.crearReserva(fecha.value)
     fecha.value = null
     form.value.resetValidation()
+    // cargarReservas()
   } catch (err) {
     if (err?.status === 409) {
       errorGuardar.value = 'Esa fecha ya está reservada'
