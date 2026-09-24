@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import authService from '@/services/auth'
+import reservationService from '@/services/reservation'
 import { getSessionUser } from '@/helpers/session'
 
 export const useAppStore = defineStore('app', {
@@ -59,6 +60,16 @@ export const useAppStore = defineStore('app', {
         fecha,
         color,
       })
+    },
+    async crearReserva(fecha) {
+      const reservation = await reservationService.create({ date: fecha })
+      this.reservas.push({
+        id: reservation.uid,
+        persona: reservation.user?.name ?? this.aliasUsuario,
+        fecha: new Date(reservation.date),
+        color: reservation.user?.color ?? this.colorUsuario,
+      })
+      return reservation
     },
     removeReserva(id) {
       this.reservas = this.reservas.filter((r) => r.id !== id)

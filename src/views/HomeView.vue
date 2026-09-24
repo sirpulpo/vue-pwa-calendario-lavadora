@@ -30,6 +30,18 @@
     </v-sheet>
 
     <v-sheet elevation="2" rounded="lg" class="pa-4 mt-4">
+      <v-alert
+        v-if="errorGuardar"
+        type="error"
+        variant="tonal"
+        density="compact"
+        closable
+        class="mb-4"
+        @click:close="errorGuardar = ''"
+      >
+        {{ errorGuardar }}
+      </v-alert>
+
       <v-form ref="form" @submit.prevent="save">
         <v-row>
           <v-col cols="12" sm="5">
@@ -59,6 +71,7 @@
               color="primary"
               prepend-icon="mdi-content-save"
               block
+              :loading="guardando"
               :disabled="!store.aliasUsuario || !fecha"
             >
               Guardar
@@ -103,6 +116,8 @@ const today = dateAdapter.startOfDay(new Date())
 
 const form = ref(null)
 const fecha = ref(null)
+const guardando = ref(false)
+const errorGuardar = ref('')
 
 const reservedDates = computed(() => store.reservas.map((r) => r.fecha))
 
@@ -137,9 +152,24 @@ async function save() {
   const { valid } = await form.value.validate()
   if (!valid) return
 
-  store.addReserva({ persona: store.aliasUsuario, fecha: fecha.value })
-  fecha.value = null
-  form.value.resetValidation()
+  guardando.value = true
+  errorGuardar.value = ''
+
+  try {
+    await store.crearReserva(fecha.value)
+    fecha.value = null
+    form.value.resetValidation()
+  } catch (err) {
+    if (err?.status === 409) {
+      errorGuardar.value = 'Esa fecha ya está reservada'
+    } else if (!err?.status) {
+      errorGuardar.value = 'No se pudo conectar con el servidor'
+    } else {
+      errorGuardar.value = err?.data?.msg ?? 'No se pudo guardar la reserva'
+    }
+  } finally {
+    guardando.value = false
+  }
 }
 
 const monthLabel = computed(() => {

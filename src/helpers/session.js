@@ -10,6 +10,10 @@ export function saveSession({ token, user }) {
   sessionStorage.setItem(EXP_KEY, addHours(new Date(), 2).toISOString())
 }
 
+export function getSessionToken() {
+  return sessionStorage.getItem(TOKEN_KEY)
+}
+
 export function getSessionUser() {
   try {
     const raw = sessionStorage.getItem(USER_KEY)
