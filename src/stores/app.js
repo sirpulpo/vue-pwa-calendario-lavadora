@@ -85,7 +85,8 @@ export const useAppStore = defineStore('app', {
         this.reservasCargando = false
       }
     },
-    removeReserva(id) {
+    async removeReserva(id) {
+      await reservationService.remove(id)
       this.reservas = this.reservas.filter((r) => r.id !== id)
     },
   },

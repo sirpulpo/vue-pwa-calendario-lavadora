@@ -104,11 +104,14 @@
         <v-card-text>
           ¿Eliminar la reserva de {{ reservaAEliminar.name }} del
           {{ dateAdapter.format(reservaAEliminar.start, 'fullDate') }}?
+          <v-alert v-if="errorEliminar" type="error" variant="tonal" density="compact" class="mt-2">
+            {{ errorEliminar }}
+          </v-alert>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn variant="text" @click="reservaAEliminar = null">Cancelar</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmDeleteReserva">Eliminar</v-btn>
+          <v-btn variant="text" :disabled="eliminando" @click="reservaAEliminar = null">Cancelar</v-btn>
+          <v-btn color="error" variant="flat" :loading="eliminando" @click="confirmDeleteReserva">Eliminar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -169,14 +172,26 @@ const events = computed(() =>
 )
 
 const reservaAEliminar = ref(null)
+const eliminando = ref(false)
+const errorEliminar = ref('')
 
 function onEventClick(_nativeEvent, { event }) {
+  errorEliminar.value = ''
   reservaAEliminar.value = event
 }
 
-function confirmDeleteReserva() {
-  store.removeReserva(reservaAEliminar.value.id)
-  reservaAEliminar.value = null
+async function confirmDeleteReserva() {
+  eliminando.value = true
+  errorEliminar.value = ''
+
+  try {
+    await store.removeReserva(reservaAEliminar.value.id)
+    reservaAEliminar.value = null
+  } catch (err) {
+    errorEliminar.value = err?.data?.msg ?? 'No se pudo eliminar la reserva'
+  } finally {
+    eliminando.value = false
+  }
 }
 
 function allowedDates(date) {
