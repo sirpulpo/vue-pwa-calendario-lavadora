@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
+import CambiarNipDialog from '@/components/CambiarNipDialog.vue'
 
 import IconVue from '~icons/logos/vue'
 import IconVitejs from '~icons/logos/vitejs'
@@ -14,7 +15,9 @@ const router = useRouter()
 
 const drawer = ref(false)
 const confirmarLogout = ref(false)
+const cambiarNip = ref(false)
 const snackbar = ref(false)
+const snackbarTexto = ref('')
 
 const iconComponents = {
   vue: IconVue,
@@ -32,8 +35,19 @@ function logout() {
   store.logout()
   confirmarLogout.value = false
   drawer.value = false
+  snackbarTexto.value = 'Sesión cerrada'
   snackbar.value = true
   router.push({ name: 'Login' })
+}
+
+function abrirCambiarNip() {
+  cambiarNip.value = true
+  drawer.value = false
+}
+
+function onNipCambiado() {
+  snackbarTexto.value = 'NIP actualizado'
+  snackbar.value = true
 }
 </script>
 
@@ -66,7 +80,10 @@ function logout() {
       <v-divider />
 
       <template #append>
-        <div class="pa-3">
+        <div class="pa-3 d-flex flex-column ga-2">
+          <v-btn block variant="tonal" prepend-icon="mdi-lock-reset" @click="abrirCambiarNip">
+            Cambiar NIP
+          </v-btn>
           <v-btn block color="error" variant="tonal" prepend-icon="mdi-logout" @click="abrirConfirmarLogout">
             Cerrar sesión
           </v-btn>
@@ -108,7 +125,9 @@ function logout() {
       </v-card>
     </v-dialog>
 
-    <v-snackbar v-model="snackbar" timeout="3000">Sesión cerrada</v-snackbar>
+    <CambiarNipDialog v-model="cambiarNip" @success="onNipCambiado" />
+
+    <v-snackbar v-model="snackbar" timeout="3000">{{ snackbarTexto }}</v-snackbar>
 
     <v-main>
       <RouterView />
