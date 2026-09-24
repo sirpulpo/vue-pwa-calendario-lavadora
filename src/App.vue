@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 
 import IconVue from '~icons/logos/vue'
@@ -9,6 +10,7 @@ import IconPinia from '~icons/logos/pinia'
 import IconPwa from '~icons/logos/pwa'
 
 const store = useAppStore()
+const router = useRouter()
 
 const drawer = ref(false)
 const confirmarLogout = ref(false)
@@ -31,16 +33,17 @@ function logout() {
   confirmarLogout.value = false
   drawer.value = false
   snackbar.value = true
+  router.push({ name: 'Login' })
 }
 </script>
 
 <template>
   <v-app>
     <v-app-bar color="primary" density="comfortable">
-      <v-icon icon="mdi-calendar" class="ml-3 mr-2" style="cursor: pointer" @click="$router.push({ name: 'home' })" />
+      <v-icon icon="mdi-calendar" class="ml-3 mr-2" style="cursor: pointer" @click="$router.push({ name: 'Home' })" />
       <v-app-bar-title>{{ store.appName }}</v-app-bar-title>
       <v-btn v-if="store.usuario" variant="text" class="mr-1" aria-label="Usuario" @click="drawer = !drawer">
-        <span class="d-none d-sm-inline mr-2 text-none">{{ store.usuario.nombre }}</span>
+        <span class="d-none d-sm-inline mr-2 text-none">{{ store.usuario.name }}</span>
         <v-icon icon="mdi-account-circle" size="large" />
       </v-btn>
       <!-- <v-btn icon="mdi-information-outline" aria-label="Acerca de" :to="{ name: 'about' }" /> -->
@@ -51,7 +54,7 @@ function logout() {
         v-if="store.usuario"
         class="py-4"
         :subtitle="'Usuario'"
-        :title="store.usuario.nombre"
+        :title="store.usuario.name"
       >
         <template #prepend>
           <v-avatar color="primary" class="mr-1">

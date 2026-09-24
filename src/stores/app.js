@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import authService from '@/services/auth'
+import { getSessionUser } from '@/helpers/session'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -18,23 +20,30 @@ export const useAppStore = defineStore('app', {
       { nombre: 'Invitado', color: 'orange' },
     ],
     reservas: [],
-    usuario: { nombre: 'Victor Daniel Aguirre Gil' },
+    usuario: getSessionUser(),
   }),
   getters: {
     iniciales(state) {
-      if (!state.usuario?.nombre) return ''
-      return state.usuario.nombre
+      if (!state.usuario?.name) return ''
+      return state.usuario.name
         .split(' ')
         .slice(0, 2)
         .map((palabra) => palabra.charAt(0).toUpperCase())
         .join('')
     },
     personaUsuario(state) {
-      const palabras = state.usuario?.nombre?.toLowerCase().split(' ') ?? []
+      const palabras = state.usuario?.name?.toLowerCase().split(' ') ?? []
       return state.personas.find((p) => palabras.includes(p.nombre.toLowerCase()))?.nombre ?? null
     },
   },
   actions: {
+    async login({ alias, nip }) {
+      this.usuario = await authService.loginService({ alias, nip })
+    },
+    logout() {
+      authService.logout()
+      this.usuario = null
+    },
     addReserva({ persona, fecha }) {
       const color = this.personas.find((p) => p.nombre === persona)?.color
       this.reservas.push({
@@ -46,9 +55,6 @@ export const useAppStore = defineStore('app', {
     },
     removeReserva(id) {
       this.reservas = this.reservas.filter((r) => r.id !== id)
-    },
-    logout() {
-      this.usuario = null
     },
   },
 })
