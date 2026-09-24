@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import authService from '@/services/auth'
 import reservationService from '@/services/reservation'
-import { getSessionUser } from '@/helpers/session'
+import userService from '@/services/user'
+import { getSessionUser, saveSession } from '@/helpers/session'
 
 function mapReserva(reservation) {
   return {
@@ -61,6 +62,10 @@ export const useAppStore = defineStore('app', {
     logout() {
       authService.logout()
       this.usuario = null
+    },
+    async cambiarNip({ currentNip, newNip }) {
+      const token = await userService.updateNip({ currentNip, newNip })
+      saveSession({ token, user: this.usuario })
     },
     addReserva({ persona, fecha }) {
       const color = this.personas.find((p) => p.nombre === persona)?.color ?? this.colorUsuario
