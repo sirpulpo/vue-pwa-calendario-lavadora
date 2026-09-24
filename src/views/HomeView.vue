@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid class="py-4 py-md-6">
-    <v-sheet elevation="2" rounded="lg" class="pa-2 pa-sm-4">
+  <v-container class="py-4 py-md-6" style="max-width: 1100px">
+    <v-card elevation="2" rounded="lg" class="pa-2 pa-sm-4">
       <v-toolbar flat color="transparent" density="comfortable">
         <v-btn icon="mdi-chevron-left" variant="text" aria-label="Mes anterior" @click="prevMonth" />
 
@@ -41,9 +41,9 @@
         class="mt-2"
         @click:event="onEventClick"
       />
-    </v-sheet>
+    </v-card>
 
-    <v-sheet elevation="2" rounded="lg" class="pa-4 mt-4">
+    <v-card elevation="2" rounded="lg" class="pa-4 mt-4">
       <v-alert
         v-if="errorGuardar"
         type="error"
@@ -93,7 +93,7 @@
           </v-col>
         </v-row>
       </v-form>
-    </v-sheet>
+    </v-card>
 
     <v-dialog
       :model-value="!!reservaAEliminar"
