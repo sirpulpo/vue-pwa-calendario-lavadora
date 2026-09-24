@@ -35,6 +35,13 @@ export const useAppStore = defineStore('app', {
       const palabras = state.usuario?.name?.toLowerCase().split(' ') ?? []
       return state.personas.find((p) => palabras.includes(p.nombre.toLowerCase()))?.nombre ?? null
     },
+    aliasUsuario(state) {
+      return state.usuario?.name ?? ''
+    },
+    colorUsuario(state) {
+      const palabras = state.usuario?.name?.toLowerCase().split(' ') ?? []
+      return state.personas.find((p) => palabras.includes(p.nombre.toLowerCase()))?.color ?? 'primary'
+    },
   },
   actions: {
     async login({ alias, nip }) {
@@ -45,7 +52,7 @@ export const useAppStore = defineStore('app', {
       this.usuario = null
     },
     addReserva({ persona, fecha }) {
-      const color = this.personas.find((p) => p.nombre === persona)?.color
+      const color = this.personas.find((p) => p.nombre === persona)?.color ?? this.colorUsuario
       this.reservas.push({
         id: crypto.randomUUID(),
         persona,

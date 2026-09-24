@@ -33,13 +33,11 @@
       <v-form ref="form" @submit.prevent="save">
         <v-row>
           <v-col cols="12" sm="5">
-            <v-select
-              v-model="persona"
-              :items="store.personas"
-              item-title="nombre"
-              item-value="nombre"
+            <v-text-field
+              :model-value="store.aliasUsuario"
               label="Persona"
-              :rules="[(v) => !!v || 'Selecciona una persona']"
+              prepend-inner-icon="mdi-account"
+              readonly
             />
           </v-col>
 
@@ -61,7 +59,7 @@
               color="primary"
               prepend-icon="mdi-content-save"
               block
-              :disabled="!persona || !fecha"
+              :disabled="!store.aliasUsuario || !fecha"
             >
               Guardar
             </v-btn>
@@ -91,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useDate } from 'vuetify'
 import { VDateInput } from 'vuetify/labs/VDateInput'
 import { useAppStore } from '@/stores/app'
@@ -104,15 +102,7 @@ const focus = ref(new Date())
 const today = dateAdapter.startOfDay(new Date())
 
 const form = ref(null)
-const persona = ref(store.personaUsuario)
 const fecha = ref(null)
-
-watch(
-  () => store.personaUsuario,
-  (v) => {
-    persona.value = v
-  },
-)
 
 const reservedDates = computed(() => store.reservas.map((r) => r.fecha))
 
@@ -147,9 +137,8 @@ async function save() {
   const { valid } = await form.value.validate()
   if (!valid) return
 
-  store.addReserva({ persona: persona.value, fecha: fecha.value })
+  store.addReserva({ persona: store.aliasUsuario, fecha: fecha.value })
   fecha.value = null
-  persona.value = store.personaUsuario
   form.value.resetValidation()
 }
 
