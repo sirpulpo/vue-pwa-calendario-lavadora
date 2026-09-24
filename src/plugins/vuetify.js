@@ -1,7 +1,15 @@
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
+import { es } from 'vuetify/locale'
 
 export default createVuetify({
+  locale: {
+    locale: 'es',
+    messages: { es },
+  },
+  date: {
+    locale: { es: 'es-ES' },
+  },
   theme: {
     defaultTheme: 'light',
     themes: {
